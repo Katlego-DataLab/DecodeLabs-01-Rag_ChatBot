@@ -100,7 +100,7 @@ Facebook AI Similarity Search — an open-source library for fast nearest-neighb
 The foundational numerical computing library in Python. Used here for array manipulation when working with embeddings and FAISS index operations.
 
 ### `transformers` *(installed but not used in final version)*
-HuggingFace's library for working with pre-trained language models. Initially used for LLM-based answer generation with `google/flan-t5-base` — removed in the final version due to stability issues (see Challenges section below).
+HuggingFace's library for working with pre-trained language models. Initially used for LLM-based answer generation with `google/flan-t5-base`removed in the final version due to stability issues (see Challenges section below).
 
 ### `torch` *(dependency)*
 PyTorch — the deep learning framework that powers both `sentence-transformers` and `transformers` under the hood.
@@ -243,7 +243,7 @@ KeyError: "Unknown task text2text-generation, available tasks are [...]"
 ---
 
 ### ❌ Problem 3: `.replace(prompt, "")` causing crashes
-**Error:** When the LLM output didn't contain the prompt verbatim, `.replace()` returned the full raw output including the prompt — making responses unreadable and causing downstream crashes.
+**Error:** When the LLM output didn't contain the prompt verbatim, `.replace()` returned the full raw output including the prompt making responses unreadable and causing downstream crashes.
 
 **Fix:** Switched to slicing: `answer = raw[len(prompt):].strip()` which always correctly removes exactly the prompt portion.
 
@@ -330,6 +330,6 @@ Built with 🤍 as part of the **DecodeLab Batch 2026 Internship Programme**
 
 ---
 
-## 📄 License
+##  License
 
-MIT License — free to use, modify, and distribute with attribution.
+MIT License  free to use, modify, and distribute with attribution.
