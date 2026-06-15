@@ -1,4 +1,5 @@
 # DecodeLab AI Knowledge Base
+# Replace this content with YOUR own custom data!
 # Each section becomes a chunk the RAG system can retrieve.
 
 ---
