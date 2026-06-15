@@ -33,7 +33,7 @@ Unlike a standard chatbot that relies purely on training data, RAG grounds respo
 
 ---
 
-##  Architecture — Hybrid Two-Layer System
+##  Architecture,  Hybrid Two-Layer System
 
 ```
 User Input
