@@ -91,16 +91,16 @@ Chatbot Response
 The web framework that powers the entire chatbot UI. Streamlit turns Python scripts into interactive web apps with no frontend code needed. Used here for the chat interface, sidebar, spinner, session state, and page config.
 
 ### `sentence-transformers`
-A library built on top of HuggingFace Transformers that produces high-quality sentence embeddings. The model `all-MiniLM-L6-v2` converts text into 384-dimensional vectors that capture semantic meaning — so "machine learning" and "ML algorithms" are understood as related even without matching keywords.
+A library built on top of HuggingFace Transformers that produces high-quality sentence embeddings. The model `all-MiniLM-L6-v2` converts text into 384-dimensional vectors that capture semantic meaning so "machine learning" and "ML algorithms" are understood as related even without matching keywords.
 
 ### `faiss-cpu`
-Facebook AI Similarity Search — an open-source library for fast nearest-neighbour search in high-dimensional vector spaces. Used here with `IndexFlatIP` (inner product on normalised vectors = cosine similarity) to find the most semantically similar chunks to a user's query.
+Facebook AI Similarity Search an open-source library for fast nearest-neighbour search in high-dimensional vector spaces. Used here with `IndexFlatIP` (inner product on normalised vectors = cosine similarity) to find the most semantically similar chunks to a user's query.
 
 ### `numpy`
 The foundational numerical computing library in Python. Used here for array manipulation when working with embeddings and FAISS index operations.
 
 ### `transformers` *(installed but not used in final version)*
-HuggingFace's library for working with pre-trained language models. Initially used for LLM-based answer generation with `google/flan-t5-base` — removed in the final version due to stability issues (see Challenges section below).
+HuggingFace's library for working with pre-trained language models. Initially used for LLM-based answer generation with `google/flan-t5-base`  removed in the final version due to stability issues (see Challenges section below).
 
 ### `torch` *(dependency)*
 PyTorch — the deep learning framework that powers both `sentence-transformers` and `transformers` under the hood.
@@ -243,7 +243,7 @@ KeyError: "Unknown task text2text-generation, available tasks are [...]"
 ---
 
 ### ❌ Problem 3: `.replace(prompt, "")` causing crashes
-**Error:** When the LLM output didn't contain the prompt verbatim, `.replace()` returned the full raw output including the prompt — making responses unreadable and causing downstream crashes.
+**Error:** When the LLM output didn't contain the prompt verbatim, `.replace()` returned the full raw output including the prompt making responses unreadable and causing downstream crashes.
 
 **Fix:** Switched to slicing: `answer = raw[len(prompt):].strip()` which always correctly removes exactly the prompt portion.
 
@@ -287,9 +287,9 @@ python -m streamlit run app.py
 ---
 
 ###  Final Solution: Removed LLM entirely
-After multiple LLM-related crashes, the decision was made to remove the LLM generation step and use **retrieval-only RAG**. The chatbot now returns the top retrieved chunks directly as answers.
+After multiple LLM-related crashes, the decision was made to remove the LLM generation step and use retrieval-only RAG. The chatbot now returns the top retrieved chunks directly as answers.
 
-**Result:** Zero crashes, fast responses, stable deployment, and still fully functional as a RAG system — because the knowledge base chunks are already dense and informative.
+**Result:** Zero crashes, fast responses, stable deployment, and still fully functional as a RAG system because the knowledge base chunks are already dense and informative.
 
 **Lesson:** For local deployment on limited RAM, retrieval-only RAG is more robust than generation-based RAG with large models. LLM generation should be offloaded to an API (e.g. OpenAI, Anthropic, or HuggingFace Inference API) rather than run locally.
 
@@ -322,7 +322,6 @@ The interface features a custom dark navy theme inspired by modern developer por
 ## Author
 
 **Katlego Mathebula**
-Junior Data Scientist & ML Engineer
 GitHub: [Katlego-DataLab](https://github.com/Katlego-DataLab)
 Portfolio: [katlego-datalab.github.io](https://katlego-datalab.github.io/Website-updated-/)
 
@@ -332,4 +331,4 @@ Built with 🤍 as part of the **DecodeLab Batch 2026 Internship Programme**
 
 ##  License
 
-MIT License — free to use, modify, and distribute with attribution.
+MIT License free to use, modify, and distribute with attribution.
