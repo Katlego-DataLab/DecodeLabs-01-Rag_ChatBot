@@ -70,6 +70,7 @@ header { visibility:hidden; }
     }
 }
 }
+}
 </style>
 
 <div class="cursor-glow" id="glow"></div>
