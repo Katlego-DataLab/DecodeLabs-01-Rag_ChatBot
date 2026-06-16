@@ -227,7 +227,7 @@ This project involved significant debugging and iteration. Below is an honest ac
 
 **Result:** The model echoed the entire prompt back in its response instead of generating a clean answer.
 
-**Fix attempted:** Changed to `"text2text-generation"` — but this caused a new error.
+**Fix attempted:** Changed to `"text2text-generation"` but this caused a new error.
 
 ---
 
