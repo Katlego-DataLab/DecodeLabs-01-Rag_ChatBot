@@ -3,3 +3,4 @@ faiss-cpu
 transformers
 torch
 numpy
+pytz
