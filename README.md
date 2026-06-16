@@ -12,10 +12,11 @@
 Built as part of the DecodeLab Batch 2026 Internship Programme by Katlego Mathebula.
 
 ---
-
+## LIVE APP 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://decodelabs-01-ai-chatbot-katlego03mathebula.streamlit.app/)
 ##  Demo
 
-![DecodeLab AI Chatbot Screenshot](screenshot.png)
+![DecodeLab AI Chatbot Screenshot](https://github.com/Katlego-DataLab/DecodeLabs-01-Rag_ChatBot/blob/main/Chatbot%20App%20image.png)
 
 > Dark-themed chat interface with sidebar navigation, topic tags, and real-time semantic search across a custom AI/ML knowledge base.
 
