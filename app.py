@@ -54,23 +54,22 @@ header { visibility:hidden; }
 .stChatInput textarea { color:#64ffda !important; font-size:0.875rem !important; background:#0f172a !important; caret-color:#64ffda !important; }
 .stChatInput textarea::placeholder { color:rgba(100,255,218,0.35) !important; }
 /* ── MOBILE: show sidebar toggle button ── */
-@media (max-width: 768px) {
-    [data-testid="collapsedControl"] {
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        position: fixed !important;
-        top: 0.5rem !important;
-        left: 0.5rem !important;
-        z-index: 999999 !important;
-        background: #0d1424 !important;
-        border: 1px solid #64ffda !important;
-        border-radius: 8px !important;
-        padding: 4px 8px !important;
-    }
+/* ── ALWAYS SHOW SIDEBAR TOGGLE ON ALL DEVICES ── */
+[data-testid="collapsedControl"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: fixed !important;
+    top: 0.5rem !important;
+    left: 0.5rem !important;
+    z-index: 999999 !important;
+    background: #0d1424 !important;
+    border: 1px solid #64ffda !important;
+    border-radius: 8px !important;
+    padding: 4px 8px !important;
+    color: #64ffda !important;
 }
-}
-}
+
 </style>
 
 <div class="cursor-glow" id="glow"></div>
