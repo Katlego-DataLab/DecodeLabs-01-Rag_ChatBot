@@ -7,9 +7,9 @@
 ![RAG](https://img.shields.io/badge/Architecture-RAG-blueviolet?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Live-brightgreen?style=for-the-badge)
 
-> A hybrid AI chatbot combining rule-based logic with Retrieval Augmented Generation (RAG) — built raw in Python without LangChain, with a sleek dark Streamlit UI.
+> A hybrid AI chatbot combining rule-based logic with Retrieval Augmented Generation (RAG) built raw in Python without LangChain, with a sleek dark Streamlit UI.
 
-Built as part of the **DecodeLab Batch 2026 Internship Programme** by **Katlego Mathebula**.
+Built as part of the DecodeLab Batch 2026 Internship Programme by Katlego Mathebula.
 
 ---
 
