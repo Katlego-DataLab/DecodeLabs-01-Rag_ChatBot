@@ -106,7 +106,7 @@ The foundational numerical computing library in Python. Used here for array mani
 HuggingFace's library for working with pre-trained language models. Initially used for LLM-based answer generation with `google/flan-t5-base`  removed in the final version due to stability issues (see Challenges section below).
 
 ### `torch` *(dependency)*
-PyTorch — the deep learning framework that powers both `sentence-transformers` and `transformers` under the hood.
+PyTorch the deep learning framework that powers both `sentence-transformers` and `transformers` under the hood.
 
 ---
 
