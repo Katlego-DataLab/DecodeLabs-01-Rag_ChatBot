@@ -1,0 +1,71 @@
+# DecodeLab AI Knowledge Base
+# Each section becomes a chunk the RAG system can retrieve.
+
+---
+TOPIC: AI vs ML vs Deep Learning — Differences
+Artificial Intelligence (AI) is the broadest concept: any technique that enables machines to mimic human intelligence, including rule-based systems, expert systems, robotics, and machine learning.
+Machine Learning (ML) is a subset of AI that focuses specifically on systems that learn patterns from data rather than being explicitly programmed with rules.
+Deep Learning (DL) is a subset of ML that uses neural networks with many layers to learn hierarchical representations — it requires large datasets and significant compute.
+The key difference between AI and ML: AI includes any intelligent behaviour by machines (including hardcoded logic), while ML requires the machine to learn from data.
+The key difference between ML and DL: ML uses structured features and smaller models, while DL automatically extracts features from raw data like images and text.
+Not all AI is ML — a chess engine using minimax search is AI but not ML.
+Not all ML is DL — random forests and SVMs are ML but not deep learning.
+
+---
+
+TOPIC: Python Programming
+Python is a high-level, interpreted programming language known for its clean syntax and readability.
+Python supports multiple programming paradigms including procedural, object-oriented, and functional programming.
+Python is widely used in data science, machine learning, web development, and automation.
+Popular Python libraries include NumPy, Pandas, Scikit-learn, TensorFlow, and PyTorch.
+Python uses indentation to define code blocks instead of curly braces.
+---
+
+TOPIC: Machine Learning
+Machine learning is a subset of artificial intelligence where systems learn from data without being explicitly programmed.
+Supervised learning uses labelled data to train models to make predictions.
+Unsupervised learning finds hidden patterns in data without labels.
+Reinforcement learning trains agents by rewarding desired behaviours.
+Common ML algorithms include linear regression, decision trees, random forests, SVMs, and neural networks.
+Overfitting occurs when a model learns training data too well and performs poorly on new data.
+---
+
+TOPIC: Data Science
+Data science combines statistics, programming, and domain knowledge to extract insights from data.
+The data science pipeline includes data collection, cleaning, exploration, modelling, and deployment.
+Exploratory Data Analysis (EDA) is the process of visually and statistically summarising a dataset.
+Feature engineering is the process of creating new input variables from raw data to improve model performance.
+Common data science tools include Jupyter Notebooks, Pandas, Matplotlib, Seaborn, and Scikit-learn.
+---
+
+TOPIC: Neural Networks
+A neural network is a series of algorithms that attempts to recognise patterns in data inspired by the human brain.
+Neural networks consist of layers: an input layer, one or more hidden layers, and an output layer.
+Each neuron in a layer applies a weight to its input and passes the result through an activation function.
+Backpropagation is the algorithm used to update weights by computing gradients of the loss function.
+Deep learning refers to neural networks with many hidden layers capable of learning complex representations.
+---
+
+TOPIC: Natural Language Processing
+Natural Language Processing (NLP) is a branch of AI that enables computers to understand and generate human language.
+Tokenisation is the process of splitting text into individual words or subwords called tokens.
+Word embeddings like Word2Vec and GloVe represent words as dense numerical vectors capturing semantic meaning.
+Transformer models like BERT and GPT revolutionised NLP by using attention mechanisms to understand context.
+Sentiment analysis, text classification, machine translation, and question answering are common NLP tasks.
+---
+
+TOPIC: RAG (Retrieval Augmented Generation)
+RAG stands for Retrieval Augmented Generation, a technique that enhances LLM responses with external knowledge.
+Instead of relying solely on training data, RAG retrieves relevant documents and injects them into the prompt.
+The RAG pipeline has two phases: indexing (encoding documents as vectors) and querying (retrieving and generating).
+Vector embeddings allow semantic search, finding documents that are conceptually similar, not just keyword matches.
+RAG reduces hallucinations by grounding the LLM response in actual retrieved documents.
+---
+
+TOPIC: Vector Databases
+A vector database stores high-dimensional embeddings and enables fast similarity search.
+FAISS (Facebook AI Similarity Search) is a popular open-source library for efficient vector search.
+ChromaDB and Pinecone are purpose-built vector databases used in production RAG systems.
+Similarity search computes the distance between query vectors and stored vectors to find the most relevant results.
+Cosine similarity is a common metric for comparing text embeddings in semantic search.
+---
