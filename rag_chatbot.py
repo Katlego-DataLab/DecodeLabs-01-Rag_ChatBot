@@ -94,8 +94,7 @@ def generate_answer(query: str, context_chunks: list[str], llm) -> str:
 
 ## ── STEP 5: RULE-BASED LAYER ──────────────────────────────────
 def rule_based_response(user_input: str, user_name: str, waiting_for: str) -> tuple[str | None, str, str]:
-
-    now = get_sa_time()
+    now = datetime.now().strftime("%H:%M")
 
     if waiting_for == "name":
         user_name = user_input.replace("my name is ", "").title() if user_input.startswith("my name is ") else user_input.title()
