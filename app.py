@@ -59,7 +59,16 @@ header { visibility:hidden; }
         display: block !important;
         visibility: visible !important;
         opacity: 1 !important;
+        position: fixed !important;
+        top: 0.5rem !important;
+        left: 0.5rem !important;
+        z-index: 999999 !important;
+        background: #0d1424 !important;
+        border: 1px solid #64ffda !important;
+        border-radius: 8px !important;
+        padding: 4px 8px !important;
     }
+}
 }
 </style>
 
