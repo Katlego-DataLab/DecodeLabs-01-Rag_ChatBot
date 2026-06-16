@@ -53,6 +53,14 @@ header { visibility:hidden; }
 .stChatInput > div:focus-within { border-color:#64ffda !important; }
 .stChatInput textarea { color:#64ffda !important; font-size:0.875rem !important; background:#0f172a !important; caret-color:#64ffda !important; }
 .stChatInput textarea::placeholder { color:rgba(100,255,218,0.35) !important; }
+/* ── MOBILE: show sidebar toggle button ── */
+@media (max-width: 768px) {
+    [data-testid="collapsedControl"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+}
 </style>
 
 <div class="cursor-glow" id="glow"></div>
