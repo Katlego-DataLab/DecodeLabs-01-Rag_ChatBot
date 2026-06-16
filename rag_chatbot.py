@@ -8,10 +8,8 @@ import os
 import numpy as np
 import faiss
 from datetime import datetime
-import pytz
 from sentence_transformers import SentenceTransformer
 from transformers import pipeline
-
 
 ## ── CONFIG ────────────────────────────────────────────────────
 DATA_PATH   = "data/knowledge_base.txt"
