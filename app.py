@@ -6,7 +6,6 @@
 import streamlit as st
 import faiss
 from datetime import datetime
-import pytz
 from sentence_transformers import SentenceTransformer
 
 st.set_page_config(page_title="DecodeLab AI", page_icon="🤖", layout="wide")
