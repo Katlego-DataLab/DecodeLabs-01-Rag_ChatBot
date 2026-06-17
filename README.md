@@ -13,7 +13,7 @@ Built as part of the DecodeLab Batch 2026 Internship Programme by Katlego Matheb
 
 ---
 ## LIVE APP 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_red.svg)](https://decodelabs-01-ai-chatbot-katlego03mathebula.streamlit.app/)
+[![Open in Streamlit](https://img.shields.io/badge/👑%20Open%20in-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://decodelabs-01-ragchatbot-mathebula03katlego.streamlit.app/)
 
 ---
 ##  Demo
