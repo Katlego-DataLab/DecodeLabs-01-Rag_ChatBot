@@ -380,9 +380,9 @@ st.markdown("""
   <div class="info-card">
     <div class="info-card-title"> Built with 🤍 by</div>
     <span class="author-name">Katlego Mathebula</span>
-    <span class="author-role">Junior Data Scientist & ML Engineer · DecodeLab Batch 2026</span>
+    <span class="author-role">Junior Data Scientist & ML Engineer · DecodeLab 2026</span>
     <div class="info-text" style="margin-bottom: 10px;">
-      Built raw in Python — no LangChain. Uses HuggingFace Sentence Transformers + FAISS for real-time semantic search across a custom AI/ML knowledge base.
+      Built raw in Python, no LangChain. Uses HuggingFace Sentence Transformers + FAISS for real-time semantic search across a custom AI/ML knowledge base.
     </div>
     <a class="author-link" href="https://github.com/Katlego-DataLab" target="_blank">⌥ GitHub</a>
     <a class="author-link" href="https://katlego-datalab.github.io/Website-updated-/" target="_blank">⌥ Portfolio</a>
