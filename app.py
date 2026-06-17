@@ -378,7 +378,7 @@ st.markdown("""
   </div>
 
   <div class="info-card">
-    <div class="info-card-title">👩🏾‍💻 Built by</div>
+    <div class="info-card-title"> Built with 🤍 by</div>
     <span class="author-name">Katlego Mathebula</span>
     <span class="author-role">Junior Data Scientist & ML Engineer · DecodeLab Batch 2026</span>
     <div class="info-text" style="margin-bottom: 10px;">
