@@ -1,247 +1,196 @@
-## ────────────────────────────────────────────────────
-## DecodeLab RAG Chatbot Streamlit UI
+ ## ────────────────────────────────────────────────────
+## DecodeLab RAG Chatbot, Built Raw (No LangChain)
 ## Author : Katlego Mathebula
+## Stack  : HuggingFace Transformers + FAISS + Sentence Transformers
 ## ────────────────────────────────────────────────────
 
-import streamlit as st
+import os
+import numpy as np
 import faiss
 from datetime import datetime
 from sentence_transformers import SentenceTransformer
-
-st.set_page_config(page_title="DecodeLab AI", page_icon="🤖", layout="wide")
-
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@600;700&display=swap');
-
-html, body, [class*="css"] { font-family:'Inter',sans-serif; background:#0f172a !important; color:#cbd5e1; }
-footer { visibility:hidden; }
-header { visibility:hidden; }
-[data-testid="stHeader"] { display:none; }
-.block-container { padding:1.5rem 2rem !important; max-width:100% !important; }
-
-.stApp, .stApp > div,
-[data-testid="stAppViewContainer"],
-[data-testid="stMain"],
-[data-testid="stMainBlockContainer"] { background:#0f172a !important; }
-
-.cursor-glow { position:fixed; width:600px; height:600px; border-radius:50%; background:radial-gradient(circle,rgba(100,255,218,0.06) 0%,transparent 70%); pointer-events:none; transform:translate(-50%,-50%); z-index:0; top:0; left:0; }
-
-[data-testid="stSidebar"] { background:#0d1424 !important; border-right:1px solid #1e293b; }
-[data-testid="stSidebar"] * { color:#cbd5e1 !important; }
-[data-testid="stSidebarContent"] { padding:2rem 1.5rem; }
-
-.pill { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:500; padding:4px 12px; border-radius:20px; border:1px solid; margin:2px; }
-.pill-teal  { background:rgba(100,255,218,0.08); border-color:rgba(100,255,218,0.3); color:#64ffda !important; }
-.pill-blue  { background:rgba(96,165,250,0.08);  border-color:rgba(96,165,250,0.3);  color:#60a5fa !important; }
-.pill-slate { background:rgba(148,163,184,0.08); border-color:rgba(148,163,184,0.3); color:#94a3b8 !important; }
-
-.topic-tag { display:inline-block; background:rgba(100,255,218,0.05); border:1px solid rgba(100,255,218,0.15); color:#64ffda !important; font-size:11px; padding:3px 10px; border-radius:10px; margin:2px; }
-
-.msg-user { display:flex; justify-content:flex-end; margin:0.6rem 0; }
-.msg-bot  { display:flex; justify-content:flex-start; margin:0.6rem 0; gap:10px; align-items:flex-start; }
-.bubble-user { background:linear-gradient(135deg,rgba(100,255,218,0.15),rgba(96,165,250,0.15)); border:1px solid rgba(100,255,218,0.25); color:#e2e8f0; padding:10px 16px; border-radius:16px 16px 4px 16px; max-width:75%; font-size:0.875rem; line-height:1.6; }
-.bubble-bot  { background:#111827; border:1px solid #1e293b; color:#cbd5e1; padding:10px 16px; border-radius:16px 16px 16px 4px; max-width:75%; font-size:0.875rem; line-height:1.6; }
-.bot-avatar  { width:30px; height:30px; border-radius:50%; background:rgba(100,255,218,0.1); border:1px solid rgba(100,255,218,0.3); display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; margin-top:2px; }
-.src-chip { background:#0f172a; border:1px solid #1e293b; color:#475569; font-size:10px; padding:2px 8px; border-radius:8px; margin:2px; display:inline-block; }
-
-.chat-box { background:#0d1424; border:1px solid #1e293b; border-radius:14px; padding:1.2rem; height:360px; overflow-y:auto; margin-bottom:0.8rem; }
-.chat-box::-webkit-scrollbar-thumb { background:#1e293b; border-radius:2px; }
-
-.stChatInput > div { background:#0f172a !important; border:1px solid #1e293b !important; border-radius:12px !important; }
-.stChatInput > div:focus-within { border-color:#64ffda !important; }
-.stChatInput textarea { color:#64ffda !important; font-size:0.875rem !important; background:#0f172a !important; caret-color:#64ffda !important; }
-.stChatInput textarea::placeholder { color:rgba(100,255,218,0.35) !important; }
-/* ── MOBILE: show sidebar toggle button ── */
-/* ── ALWAYS SHOW SIDEBAR TOGGLE ON ALL DEVICES ── */
-[data-testid="collapsedControl"] {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    position: fixed !important;
-    top: 0.5rem !important;
-    left: 0.5rem !important;
-    z-index: 999999 !important;
-    background: #0d1424 !important;
-    border: 1px solid #64ffda !important;
-    border-radius: 8px !important;
-    padding: 4px 8px !important;
-    color: #64ffda !important;
-}
-
-</style>
-
-<div class="cursor-glow" id="glow"></div>
-<script>
-document.addEventListener('mousemove',(e)=>{
-    const g=document.getElementById('glow');
-    if(g){g.style.left=e.clientX+'px';g.style.top=e.clientY+'px';}
-});
-</script>
-""", unsafe_allow_html=True)
+from transformers import pipeline
 
 ## ── CONFIG ────────────────────────────────────────────────────
 DATA_PATH   = "data/knowledge_base.txt"
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+LLM_MODEL   = "google/flan-t5-base"
 TOP_K       = 5
 CHUNK_SIZE  = 3
 
-## ── RAG FUNCTIONS (no LLM — retrieval only, stable) ──────────
-def load_and_chunk(path, chunk_size=CHUNK_SIZE):
+
+## ── STEP 1: LOAD AND CHUNK DOCUMENTS ─────────────────────────
+def load_and_chunk(path: str, chunk_size: int = CHUNK_SIZE) -> list[str]:
     with open(path, "r", encoding="utf-8") as f:
         raw = f.read()
+
     chunks = []
     for section in raw.split("---"):
         section = section.strip()
         if not section or section.startswith("#"):
             continue
+
         sentences = [s.strip() for s in section.split("\n") if s.strip() and not s.startswith("TOPIC:")]
+
         for i in range(0, len(sentences), max(1, chunk_size - 1)):
-            chunk = " ".join(sentences[i: i + chunk_size])
+            chunk = " ".join(sentences[i : i + chunk_size])
             if chunk:
                 chunks.append(chunk)
+
+    print(f"[✓] Loaded {len(chunks)} chunks from knowledge base")
     return chunks
 
-def build_index(chunks, embed_model):
-    embeddings = embed_model.encode(chunks, convert_to_numpy=True)
-    faiss.normalize_L2(embeddings)
-    index = faiss.IndexFlatIP(embeddings.shape[1])
-    index.add(embeddings)
-    return index
 
-def retrieve(query, index, chunks, embed_model):
-    qv = embed_model.encode([query], convert_to_numpy=True)
-    faiss.normalize_L2(qv)
-    scores, indices = index.search(qv, TOP_K)
-    results = []
+## ── STEP 2: BUILD VECTOR INDEX ────────────────────────────────
+def build_index(chunks: list[str], embed_model: SentenceTransformer):
+    print("Embedding knowledge base, this only happens once...")
+    embeddings = embed_model.encode(chunks, show_progress_bar=True, convert_to_numpy=True)
+
+    faiss.normalize_L2(embeddings)
+
+    dim   = embeddings.shape[1]
+    index = faiss.IndexFlatIP(dim)
+    index.add(embeddings)
+
+    print(f"[✓] FAISS index built — {index.ntotal} vectors stored (dim={dim})")
+    return index, embeddings
+
+
+## ── STEP 3: RETRIEVE RELEVANT CHUNKS ─────────────────────────
+def retrieve(query: str, index, chunks: list[str], embed_model: SentenceTransformer, top_k: int = TOP_K) -> list[str]:
+    query_vec = embed_model.encode([query], convert_to_numpy=True)
+    faiss.normalize_L2(query_vec)
+
+    scores, indices = index.search(query_vec, top_k)
+
+    retrieved = []
     for score, idx in zip(scores[0], indices[0]):
         if idx != -1 and score > 0.1:
-            results.append(chunks[idx])
-    return results
+            retrieved.append(chunks[idx])
 
-def build_answer(context_chunks):
-    ## No LLM needed — just return the retrieved chunks as the answer
+    return retrieved
+
+
+## ── STEP 4: GENERATE ANSWER ───────────────────────────────────
+def generate_answer(query: str, context_chunks: list[str], llm) -> str:
     if not context_chunks:
-        return "I couldn't find relevant information for that question. Try asking about ML, Python, NLP, RAG, or Data Science!"
-    return " ".join(context_chunks[:3])
+        return "I couldn't find relevant information in my knowledge base for that question."
 
-def rule_based(user_input, user_name, waiting_for):
-    now = datetime.now().strftime("%H:%M")
-    if waiting_for == "name":
-        name = user_input.replace("my name is ", "").title() if user_input.startswith("my name is ") else user_input.title()
-        return f"What a beautiful name, {name}! 🌟 How can I help you?", name, ""
-    if waiting_for == "location":
-        return f"Oh {user_input.title()}! That sounds wonderful 🌍", user_name, ""
-    if waiting_for == "hobby":
-        return f"That's so cool that you enjoy {user_input.title()}! 🎉", user_name, ""
-    if user_input in ["hi", "hello", "hey"]:
-        return "Hello! I'm DecodeLab AI 🤖 What's your name?", user_name, "name"
-    if any(kw in user_input for kw in ["your name", "who built you", "who made you", "who created you"]):
-        return "I'm DecodeLab AI, built with 🤍 by Katlego Mathebula!", user_name, ""
-    if "how are you" in user_input:
-        return (f"I'm doing great, thanks for asking {user_name}! 😊" if user_name else "I'm doing great! 😊"), user_name, ""
-    if "time" in user_input:
-        return f"The current time is {now} ⏰", user_name, ""
-    if "where are you from" in user_input:
-        return "I'm from the digital world 💻 Where are you from?", user_name, "location"
-    if "hobbies" in user_input or "fun" in user_input:
-        return "I love learning and helping people! 🚀 What about you?", user_name, "hobby"
-    if "help" in user_input:
-        return "Ask me about:\n🧠 Machine Learning · 🤖 Deep Learning\n📊 Data Science · 💬 NLP · 🔍 RAG · 🐍 Python", user_name, ""
-    return None, user_name, waiting_for
+    context = "\n".join(f"- {chunk}" for chunk in context_chunks)
 
-## ── CACHED LOADER (embedding only — no LLM to crash) ─────────
-@st.cache_resource(show_spinner=False)
-def load_embed_and_index():
-    embed_model = SentenceTransformer(EMBED_MODEL)
-    chunks = load_and_chunk(DATA_PATH)
-    index = build_index(chunks, embed_model)
-    return embed_model, chunks, index
-
-## ── SESSION STATE ─────────────────────────────────────────────
-if "messages"    not in st.session_state: st.session_state.messages    = []
-if "user_name"   not in st.session_state: st.session_state.user_name   = ""
-if "waiting_for" not in st.session_state: st.session_state.waiting_for = ""
-
-with st.spinner("Loading AI models..."):
-    embed_model, chunks, index = load_embed_and_index()
-
-## ════ SIDEBAR ════════════════════════════════════════════════
-with st.sidebar:
-    st.markdown("<h1 style='font-family:Space Grotesk,sans-serif; font-size:1.6rem; color:#e2e8f0; margin:0;'>DecodeLab<br>AI Chatbot</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='color:#64ffda; font-size:0.85rem; font-weight:500; margin:0.3rem 0 1rem;'>AI Engineer · RAG System</p>", unsafe_allow_html=True)
-    st.markdown("<p style='color:#475569; font-size:0.8rem; line-height:1.7;'>Ask me anything about machine learning, AI, data science, and Python.</p>", unsafe_allow_html=True)
-    st.markdown("---")
-    st.markdown("<p style='color:#475569; font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase;'>Topics</p>", unsafe_allow_html=True)
-    st.markdown("""
-    <div>
-        <span class="topic-tag">Machine Learning</span>
-        <span class="topic-tag">Deep Learning</span>
-        <span class="topic-tag">NLP</span>
-        <span class="topic-tag">RAG</span>
-        <span class="topic-tag">Transformers</span>
-        <span class="topic-tag">FAISS</span>
-        <span class="topic-tag">Python</span>
-        <span class="topic-tag">Data Science</span>
-    </div>
-    """, unsafe_allow_html=True)
-    st.markdown("---")
-    st.markdown("<p style='color:#475569; font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase;'>Try asking</p>", unsafe_allow_html=True)
-    st.markdown("""
-    <div style='font-size:12px; color:#475569; line-height:2.2;'>
-        → What is machine learning?<br>
-        → Explain neural networks<br>
-        → What is RAG?<br>
-        → How does backpropagation work?
-    </div>
-    """, unsafe_allow_html=True)
-    st.markdown("---")
-    st.markdown("<p style='font-size:11px; color:#334155;'>Built with 🤍 by <span style='color:#64ffda; font-weight:600;'>Katlego Mathebula</span><br>DecodeLab Internship</p>", unsafe_allow_html=True)
-
-## ════ MAIN CONTENT ════════════════════════════════════════════
-st.markdown("<p style='font-size:11px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#64ffda;'>Chat Interface</p>", unsafe_allow_html=True)
-
-st.markdown(f"""
-<div style='margin-bottom:1rem;'>
-    <span class="pill pill-teal">● RAG Ready</span>
-    <span class="pill pill-blue">● {len(chunks)} Chunks Indexed</span>
-    <span class="pill pill-slate">● FAISS · cosine similarity</span>
-</div>
-""", unsafe_allow_html=True)
-
-## chat history
-chat_html = '<div class="chat-box" id="chat-box">'
-if not st.session_state.messages:
-    chat_html += '<div style="text-align:center;padding:3rem 0;color:#334155;"><div style="font-size:2rem;">🤖</div><div style="font-size:0.85rem;margin-top:0.5rem;">Say <strong style="color:#64ffda;">hello</strong> to get started!</div></div>'
-
-for msg in st.session_state.messages:
-    if msg["role"] == "user":
-        chat_html += f'<div class="msg-user"><div class="bubble-user">{msg["content"]}</div></div>'
-    else:
-        sources_html = ""
-        if msg.get("sources"):
-            chips = "".join(f'<span class="src-chip">{s[:50]}...</span>' for s in msg["sources"])
-            sources_html = f'<div style="margin-top:6px;">{chips}</div>'
-        chat_html += f'<div class="msg-bot"><div class="bot-avatar">🤖</div><div><div class="bubble-bot">{msg["content"]}</div>{sources_html}</div></div>'
-
-chat_html += '<div id="chat-end"></div></div>'
-st.markdown(chat_html, unsafe_allow_html=True)
-
-## input
-if prompt := st.chat_input("Ask me about AI, ML, Data Science..."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-
-    response, st.session_state.user_name, st.session_state.waiting_for = rule_based(
-        prompt.lower(), st.session_state.user_name, st.session_state.waiting_for
+    prompt = (
+        f"You are a helpful AI assistant. Using the context below, answer the question "
+        f"in full, complete sentences. Be detailed and informative.\n\n"
+        f"Context:\n{context}\n\n"
+        f"Question: {query}\n\n"
+        f"Detailed answer:"
     )
 
-    sources = []
-    if response:
-        answer = response
-    else:
-        with st.spinner("🔍 Searching knowledge base..."):
-            sources = retrieve(prompt, index, chunks, embed_model)
-            answer = build_answer(sources)
+    result = llm(prompt, max_new_tokens=300, truncation=True)
+    answer = result[0].get("generated_text", "").strip() if isinstance(result, list) else str(result).strip()
 
-    st.session_state.messages.append({"role": "assistant", "content": answer, "sources": sources})
-    st.rerun()
+    return answer if answer else "I found relevant context but couldn't form a clear answer."
+
+
+## ── STEP 5: RULE-BASED LAYER ──────────────────────────────────
+def rule_based_response(user_input: str, user_name: str, waiting_for: str) -> tuple[str | None, str, str]:
+    now = datetime.now().strftime("%H:%M")
+
+    if waiting_for == "name":
+        user_name = user_input.replace("my name is ", "").title() if user_input.startswith("my name is ") else user_input.title()
+        return f"What a beautiful name, {user_name}! How can I help you?", user_name, ""
+
+    if waiting_for == "location":
+        return f"Oh {user_input.title()}! That sounds like a wonderful place 🌍", user_name, ""
+
+    if waiting_for == "hobby":
+        return f"That's so cool that you enjoy {user_input.title()}! 🎉", user_name, ""
+
+    if user_input in ["hi", "hello", "hey"]:
+        return "Hello! I am DecodeLab RAG Chatbot 🤖\nWhat's your name?", user_name, "name"
+
+    if any(kw in user_input for kw in ["your name", "who built you", "who made you", "who created you"]):
+        return "I am DecodeLab RAG Chatbot, built with 🤍 by Katlego Mathebula!", user_name, ""
+
+    if "how are you" in user_input:
+        msg = f"I'm doing great, thanks for asking {user_name}!" if user_name else "I'm doing great, thanks for asking!"
+        return msg, user_name, ""
+
+    if "time" in user_input:
+        return f"The current time is {now} ⏰", user_name, ""
+
+    if "where are you from" in user_input:
+        return "I'm from the digital world 💻 I exist to assist you!\nHow about you — where are you from?", user_name, "location"
+
+    if "hobbies" in user_input or "what do you do for fun" in user_input:
+        return "I love learning and helping people! 🚀\nWhat about you — what do you do for fun?", user_name, "hobby"
+
+    if "help" in user_input:
+        return (
+            "You can ask me anything from my knowledge base!\n"
+            "Topics I know about: Python, ML, Data Science, NLP, RAG, Vector Databases.\n"
+            "Or just say hello! 😊"
+        ), user_name, ""
+
+    return None, user_name, waiting_for
+
+
+## ── MAIN CHATBOT LOOP ─────────────────────────────────────────
+def main():
+    print("=" * 55)
+    print("       DecodeLab RAG Chatbot, Powered by HuggingFace")
+    print("       Type 'bye' to exit")
+    print("=" * 55)
+
+    print("\nLoading embedding model...")
+    embed_model = SentenceTransformer(EMBED_MODEL)
+    print(f"[✓] Embedding model ready: {EMBED_MODEL}")
+
+    print("Loading language model (this may take a minute first time)...")
+    llm = pipeline("text2text-generation", model=LLM_MODEL)
+    print(f"[✓] LLM ready: {LLM_MODEL}\n")
+
+    chunks = load_and_chunk(DATA_PATH)
+    index, _ = build_index(chunks, embed_model)
+
+    user_name   = ""
+    waiting_for = ""
+
+    print("\n[✓] RAG system ready! Start chatting.\n")
+
+    while True:
+        user_input = input("You: ").strip()
+
+        if not user_input:
+            continue
+
+        if user_input.lower() in ["bye", "goodbye", "exit", "quit"]:
+            farewell = f"It was great chatting with you, {user_name}! 🤍" if user_name else "It was great chatting with you! 🤍"
+            print(f"Chatbot: {farewell}")
+            print("Chatbot: Wishing you an amazing day, bye for now!")
+            break
+
+        response, user_name, waiting_for = rule_based_response(
+            user_input.lower(), user_name, waiting_for
+        )
+
+        if response:
+            print(f"Chatbot: {response}\n")
+            continue
+
+        print("Chatbot: [searching knowledge base...]\n")
+
+        retrieved_chunks = retrieve(user_input, index, chunks, embed_model)
+
+        if retrieved_chunks:
+            print(f"[DEBUG] Retrieved {len(retrieved_chunks)} relevant chunk(s):")
+            for i, chunk in enumerate(retrieved_chunks, 1):
+                print(f"  {i}. {chunk[:80]}...")
+            print()
+
+        answer = generate_answer(user_input, retrieved_chunks, llm)
+        print(f"Chatbot: {answer}\n")
+
+
+if __name__ == "__main__":
+    main()
