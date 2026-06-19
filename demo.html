@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DecodeLab AI Chatbot — Live Demo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:    #0f172a;
+  --navy2:   #0d1526;
+  --navy3:   #0b1628;
+  --card:    #1a2740;
+  --border:  #1e3a5f;
+  --teal:    #64ffda;
+  --blue:    #60a5fa;
+  --purple:  #c084fc;
+  --green:   #4ade80;
+  --muted:   #475569;
+  --text:    #cdd6f4;
+  --white:   #e2e8f0;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--navy);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+/* ── HERO ── */
+.hero {
+  text-align: center;
+  padding: 60px 24px 40px;
+  max-width: 820px;
+  margin: 0 auto;
+}
+.hero-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--teal);
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.hero-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(32px, 6vw, 56px);
+  font-weight: 700;
+  color: var(--teal);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  line-height: 1.05;
+  margin-bottom: 12px;
+}
+.hero-sub {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+.chip-row {
+  display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+  margin-bottom: 36px;
+}
+.chip {
+  font-size: 11px; padding: 4px 12px; border-radius: 999px; font-weight: 500;
+}
+.chip-green  { background:#0f3d2e; color:var(--green);  border:1px solid #16a34a; }
+.chip-blue   { background:#0e2a4a; color:var(--blue);   border:1px solid #2563eb; }
+.chip-purple { background:#2d1b4e; color:var(--purple); border:1px solid #7c3aed; }
+
+.cta-row { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:0; }
+.btn {
+  display:inline-flex; align-items:center; gap:7px;
+  padding: 10px 22px; border-radius: 10px; font-size: 13px;
+  font-weight: 600; text-decoration: none; cursor: pointer;
+  border: none; transition: all 0.2s;
+}
+.btn-primary { background: #064e3b; color: var(--teal); border: 1px solid #10b981; }
+.btn-primary:hover { background: #065f46; }
+.btn-ghost   { background: #0e2a4a; color: var(--blue); border: 1px solid #1e4a7a; }
+.btn-ghost:hover { background: #1a3a6a; }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); max-width: 820px; margin: 0 auto 36px; }
+
+/* ── CHATBOT DEMO ── */
+.demo-wrapper {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 24px 48px;
+}
+.demo-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 14px; text-align: center;
+}
+
+.chat-shell {
+  background: var(--navy2);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+/* browser bar */
+.browser-bar {
+  background: #0a1120;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.dot { width:10px; height:10px; border-radius:50%; }
+.dot-r{background:#ff5f57;} .dot-y{background:#febc2e;} .dot-g{background:#28c840;}
+.url-bar {
+  flex:1; background: var(--navy3); border:1px solid var(--border);
+  border-radius:6px; padding:4px 12px; font-size:11px; color:var(--muted);
+  font-family:'Inter',sans-serif;
+}
+
+/* chat area */
+.chat-area {
+  padding: 20px 20px 8px;
+  min-height: 320px;
+  max-height: 380px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scroll-behavior: smooth;
+}
+.msg-bot {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 18px 18px 18px 4px;
+  padding: 11px 15px;
+  max-width: 82%;
+  font-size: 13.5px;
+  line-height: 1.6;
+  align-self: flex-start;
+  animation: fadeIn 0.3s ease;
+}
+.msg-user {
+  background: linear-gradient(135deg, #1d4ed8, #0ea5e9);
+  color: #fff;
+  border-radius: 18px 18px 4px 18px;
+  padding: 11px 15px;
+  max-width: 72%;
+  font-size: 13.5px;
+  line-height: 1.6;
+  align-self: flex-end;
+  animation: fadeIn 0.3s ease;
+}
+.source-row { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
+.source-chip {
+  background:#0f2a4a; color:#64b5f6; border:1px solid #1e4a7a;
+  border-radius:999px; font-size:10px; padding:2px 8px;
+}
+.typing {
+  display:flex; gap:5px; align-items:center; padding:11px 15px;
+  background:var(--card); border:1px solid var(--border);
+  border-radius:18px 18px 18px 4px; width:fit-content;
+  align-self:flex-start;
+}
+.typing span {
+  width:7px; height:7px; background:var(--muted); border-radius:50%;
+  animation: bounce 1.2s infinite;
+}
+.typing span:nth-child(2){ animation-delay:.2s; }
+.typing span:nth-child(3){ animation-delay:.4s; }
+@keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+/* input bar */
+.input-bar {
+  border-top: 1px solid var(--border);
+  padding: 14px 16px;
+  display: flex; gap: 10px; align-items: center;
+}
+.chat-input {
+  flex: 1;
+  background: var(--navy3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.chat-input:focus { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(100,255,218,0.12); }
+.chat-input::placeholder { color: var(--muted); }
+.send-btn {
+  background: #064e3b; color: var(--teal); border: 1px solid #10b981;
+  border-radius: 10px; font-size: 18px; font-weight: 700;
+  width: 44px; height: 44px; cursor: pointer; display:flex;
+  align-items:center; justify-content:center; transition:background 0.2s;
+  flex-shrink:0;
+}
+.send-btn:hover { background: #065f46; }
+
+/* suggestions */
+.suggestions {
+  padding: 0 16px 14px;
+  display: flex; gap: 7px; flex-wrap: wrap;
+}
+.suggestion-pill {
+  background: var(--navy3); border: 1px solid var(--border);
+  color: var(--blue); border-radius: 999px; font-size: 11px;
+  padding: 4px 12px; cursor: pointer; transition: all 0.15s;
+  font-family:'Inter',sans-serif;
+}
+.suggestion-pill:hover { background:#0e2a4a; border-color:#2563eb; }
+
+/* ── INFO CARDS ── */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 24px 48px;
+}
+@media(max-width:600px){ .info-grid{grid-template-columns:1fr;} }
+
+.info-card {
+  background: var(--navy2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 22px;
+}
+.info-card-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--teal); margin-bottom: 12px;
+}
+.topic-pill {
+  display:inline-block; background:#0e2a4a; color:var(--blue);
+  border:1px solid #1e4a7a; border-radius:999px;
+  font-size:11px; padding:3px 10px; margin:3px 3px 3px 0;
+}
+.info-text { font-size:12.5px; color:var(--muted); line-height:1.6; margin-top:10px; }
+.author-name { color:var(--teal); font-weight:700; font-size:16px; font-family:'Space Grotesk',sans-serif; display:block; margin-bottom:3px; }
+.author-role { color:var(--muted); font-size:11.5px; display:block; margin-bottom:10px; }
+.author-link {
+  display:inline-block; font-size:11px; color:var(--blue);
+  background:#0e2a4a; border:1px solid #1e4a7a;
+  border-radius:999px; padding:4px 12px; margin:3px 4px 3px 0;
+  text-decoration:none; transition:background 0.15s;
+}
+.author-link:hover{ background:#1a3a6a; }
+
+/* ── STACK SECTION ── */
+.stack-section {
+  max-width: 820px; margin: 0 auto;
+  padding: 0 24px 60px;
+  border-top: 1px solid var(--border);
+  padding-top: 36px;
+}
+.stack-title {
+  font-family:'Space Grotesk',sans-serif;
+  font-size:11px; font-weight:700;
+  letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--muted); margin-bottom:16px; text-align:center;
+}
+.stack-row { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+.stack-pill {
+  background:var(--navy2); border:1px solid var(--border);
+  border-radius:8px; padding:6px 14px; font-size:12px;
+  color:var(--white); font-weight:500;
+}
+
+/* footer */
+.footer {
+  text-align:center; padding:24px; color:var(--muted);
+  font-size:11px; border-top:1px solid var(--border);
+}
+.footer span { color:var(--teal); }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">DecodeLab Batch 2026 · Project 01</div>
+  <h1 class="hero-title">DecodeLab AI Chatbot</h1>
+  <p class="hero-sub">AI Engineer · RAG System · Built Raw in Python</p>
+
+  <div class="chip-row">
+    <span class="chip chip-green">● RAG Ready</span>
+    <span class="chip chip-blue">● 21 Chunks Indexed</span>
+    <span class="chip chip-purple">● FAISS · cosine similarity</span>
+  </div>
+
+  <div class="cta-row">
+    <a class="btn btn-primary" href="https://decodelabs-01-ragchatbot-mathebula03katlego.streamlit.app" target="_blank">🚀 Try Live App</a>
+    <a class="btn btn-ghost" href="https://github.com/Katlego-DataLab/DecodeLabs-01-Rag_ChatBot" target="_blank">⌥ View on GitHub</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- INTERACTIVE DEMO -->
+<div class="demo-wrapper">
+  <div class="demo-label">⬇ Interactive Demo — try it here</div>
+  <div class="chat-shell">
+    <!-- fake browser bar -->
+    <div class="browser-bar">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <div class="url-bar">decodelabs-01-ragchatbot-mathebula03katlego.streamlit.app</div>
+    </div>
+
+    <!-- messages -->
+    <div class="chat-area" id="chatArea">
+      <div class="msg-bot">🤖 Hello! I am DecodeLab RAG Chatbot.<br>What's your name?</div>
+    </div>
+
+    <!-- suggestion pills -->
+    <div class="suggestions" id="suggestions">
+      <button class="suggestion-pill" onclick="sendSuggestion(this)">What is machine learning?</button>
+      <button class="suggestion-pill" onclick="sendSuggestion(this)">What is RAG?</button>
+      <button class="suggestion-pill" onclick="sendSuggestion(this)">Explain neural networks</button>
+      <button class="suggestion-pill" onclick="sendSuggestion(this)">What is FAISS?</button>
+      <button class="suggestion-pill" onclick="sendSuggestion(this)">What is deep learning?</button>
+      <button class="suggestion-pill" onclick="sendSuggestion(this)">What is NLP?</button>
+    </div>
+
+    <!-- input -->
+    <div class="input-bar">
+      <input class="chat-input" id="chatInput" type="text"
+             placeholder="Ask me about AI, ML, Data Science..."
+             onkeydown="if(event.key==='Enter') sendMessage()">
+      <button class="send-btn" onclick="sendMessage()">↑</button>
+    </div>
+  </div>
+</div>
+
+<!-- INFO CARDS -->
+<div class="info-grid">
+  <div class="info-card">
+    <div class="info-card-title">📚 What you can search</div>
+    <div>
+      <span class="topic-pill">Machine Learning</span>
+      <span class="topic-pill">Deep Learning</span>
+      <span class="topic-pill">NLP</span>
+      <span class="topic-pill">RAG</span>
+      <span class="topic-pill">Transformers</span>
+      <span class="topic-pill">FAISS</span>
+      <span class="topic-pill">Python</span>
+      <span class="topic-pill">Data Science</span>
+      <span class="topic-pill">Neural Networks</span>
+      <span class="topic-pill">Vector Databases</span>
+      <span class="topic-pill">AI vs ML vs DL</span>
+    </div>
+    <p class="info-text">Try asking: <em>"What is machine learning?", "Explain neural networks", "What is RAG?", "How does backpropagation work?"</em></p>
+  </div>
+
+  <div class="info-card">
+    <div class="info-card-title">👩🏾‍💻 Built by</div>
+    <span class="author-name">Katlego Mathebula</span>
+    <span class="author-role">Junior Data Scientist & ML Engineer · DecodeLab Batch 2026</span>
+    <p class="info-text">Built raw in Python — no LangChain. Uses HuggingFace Sentence Transformers + FAISS for real-time semantic search across a custom AI/ML knowledge base.</p>
+    <br>
+    <a class="author-link" href="https://github.com/Katlego-DataLab" target="_blank">⌥ GitHub</a>
+    <a class="author-link" href="https://katlego-datalab.github.io/Website-updated-/" target="_blank">⌥ Portfolio</a>
+    <a class="author-link" href="https://www.linkedin.com/in/katlego-mathebula" target="_blank">⌥ LinkedIn</a>
+  </div>
+</div>
+
+<!-- STACK -->
+<div class="stack-section">
+  <div class="stack-title">Tech Stack</div>
+  <div class="stack-row">
+    <span class="stack-pill">🐍 Python 3.11</span>
+    <span class="stack-pill">🤗 Sentence Transformers</span>
+    <span class="stack-pill">⚡ FAISS IndexFlatIP</span>
+    <span class="stack-pill">🎈 Streamlit</span>
+    <span class="stack-pill">🔢 NumPy</span>
+    <span class="stack-pill">🧠 all-MiniLM-L6-v2</span>
+    <span class="stack-pill">📐 Cosine Similarity</span>
+    <span class="stack-pill">🏗️ Retrieval-Only RAG</span>
+  </div>
+</div>
+
+<div class="footer">
+  Built with ❤️ by <span>Katlego Mathebula</span> · DecodeLab Batch 2026
+</div>
+
+<script>
+const KB = {
+  "machine learning": {
+    answer: "Machine learning is a subset of artificial intelligence where systems learn from data without being explicitly programmed. Supervised learning uses labelled data to train models to make predictions. Unsupervised learning finds hidden patterns in data without labels. Common ML algorithms include linear regression, decision trees, random forests, SVMs, and neural networks.",
+    sources: ["Machine learning is a subset of artificial intelli...", "Supervised learning uses labelled data to train mod...", "Common ML algorithms include linear regression, deci..."]
+  },
+  "rag": {
+    answer: "RAG stands for Retrieval Augmented Generation, a technique that enhances LLM responses with external knowledge. Instead of relying solely on training data, RAG retrieves relevant documents and injects them into the prompt. The RAG pipeline has two phases: indexing (encoding documents as vectors) and querying (retrieving and generating). RAG reduces hallucinations by grounding the LLM response in actual retrieved documents.",
+    sources: ["RAG stands for Retrieval Augmented Generation, a te...", "RAG reduces hallucinations by grounding the LLM res...", "The RAG pipeline has two phases: indexing and querying..."]
+  },
+  "neural network": {
+    answer: "A neural network is a series of algorithms that attempts to recognise patterns in data inspired by the human brain. Neural networks consist of layers: an input layer, one or more hidden layers, and an output layer. Each neuron applies a weight to its input and passes the result through an activation function. Backpropagation is the algorithm used to update weights by computing gradients of the loss function.",
+    sources: ["A neural network is a series of algorithms that att...", "Each neuron in a layer applies a weight to its inpu...", "Backpropagation is the algorithm used to update weig..."]
+  },
+  "deep learning": {
+    answer: "Deep learning refers to neural networks with many hidden layers capable of learning complex representations. It requires large datasets and significant compute. Deep learning automatically extracts features from raw data like images and text, unlike traditional ML which uses structured features and smaller models.",
+    sources: ["Deep learning refers to neural networks with many h...", "Deep learning automatically extracts features from r...", "A neural network is a series of algorithms that att..."]
+  },
+  "faiss": {
+    answer: "FAISS (Facebook AI Similarity Search) is a popular open-source library for efficient vector search. A vector database stores high-dimensional embeddings and enables fast similarity search. FAISS uses cosine similarity to find the most semantically similar chunks to a user's query. ChromaDB and Pinecone are purpose-built vector databases used in production RAG systems.",
+    sources: ["FAISS (Facebook AI Similarity Search) is a popular...", "A vector database stores high-dimensional embeddings...", "Cosine similarity is a common metric for comparing t..."]
+  },
+  "nlp": {
+    answer: "Natural Language Processing (NLP) is a branch of AI that enables computers to understand and generate human language. Tokenisation is the process of splitting text into words or subwords called tokens. Transformer models like BERT and GPT revolutionised NLP by using attention mechanisms to understand context. Sentiment analysis, text classification, and machine translation are common NLP tasks.",
+    sources: ["Natural Language Processing (NLP) is a branch of A...", "Transformer models like BERT and GPT revolutionised...", "Tokenisation is the process of splitting text into t..."]
+  },
+  "python": {
+    answer: "Python is a high-level, interpreted programming language known for its clean syntax and readability. It supports multiple paradigms including procedural, object-oriented, and functional programming. Python is widely used in data science, machine learning, web development, and automation. Popular Python libraries include NumPy, Pandas, Scikit-learn, TensorFlow, and PyTorch.",
+    sources: ["Python is a high-level, interpreted programming lan...", "Python is widely used in data science, machine lear...", "Popular Python libraries include NumPy, Pandas, Sci..."]
+  },
+  "data science": {
+    answer: "Data science combines statistics, programming, and domain knowledge to extract insights from data. The data science pipeline includes data collection, cleaning, exploration, modelling, and deployment. Exploratory Data Analysis (EDA) is the process of visually and statistically summarising a dataset. Feature engineering is the process of creating new input variables from raw data to improve model performance.",
+    sources: ["Data science combines statistics, programming, and ...", "The data science pipeline includes data collection, ...", "Feature engineering creates new variables from raw d..."]
+  }
+};
+
+let userName = "";
+let waitingFor = "";
+let isTyping = false;
+
+function getKBAnswer(query) {
+  const q = query.toLowerCase();
+  for (const [key, val] of Object.entries(KB)) {
+    if (q.includes(key)) return val;
+  }
+  return null;
+}
+
+function ruleResponse(input) {
+  const low = input.toLowerCase().trim();
+  const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+
+  if (waitingFor === "name") {
+    userName = input.replace(/my name is /i,"").trim();
+    userName = userName.charAt(0).toUpperCase() + userName.slice(1);
+    waitingFor = "";
+    return { text: `What a beautiful name, ${userName}! How can I help you?` };
+  }
+  if (waitingFor === "location") { waitingFor=""; return { text: `Oh ${input}! That sounds like a wonderful place 🌍` }; }
+  if (waitingFor === "hobby")    { waitingFor=""; return { text: `That's so cool that you enjoy ${input}! 🎉` }; }
+
+  if (["hi","hello","hey"].includes(low)) { waitingFor="name"; return { text: "Hello! I am DecodeLab RAG Chatbot 🤖\nWhat's your name?" }; }
+  if (low.includes("your name")||low.includes("who built you")||low.includes("who made you")) return { text: "I am DecodeLab RAG Chatbot, built with 🤍 by Katlego Mathebula!" };
+  if (low.includes("how are you")) return { text: `I'm doing great, thanks for asking${userName ? ' ' + userName : ''}!` };
+  if (low.includes("time")) return { text: `The current time is ${now} ⏰` };
+  if (low.includes("where are you from")) { waitingFor="location"; return { text: "I'm from the digital world 💻\nHow about you — where are you from?" }; }
+  if (low.includes("hobbies")||low.includes("fun")) { waitingFor="hobby"; return { text: "I love learning and helping people! 🚀\nWhat about you — what do you do for fun?" }; }
+  if (low.includes("help")) return { text: "You can ask me anything from my knowledge base!\nTopics: Python, ML, Data Science, NLP, RAG, Vector Databases.\nOr just say hello! 😊" };
+
+  const kb = getKBAnswer(low);
+  if (kb) return { text: kb.answer, sources: kb.sources };
+
+  return { text: "I couldn't find relevant information in my knowledge base for that question. Try asking about Machine Learning, RAG, Neural Networks, NLP, FAISS, Python, or Data Science!" };
+}
+
+function addMsg(text, role, sources) {
+  const area = document.getElementById('chatArea');
+  const div  = document.createElement('div');
+  div.className = role === 'user' ? 'msg-user' : 'msg-bot';
+  div.innerHTML = (role==='bot' ? '🤖 ' : '') + text.replace(/\n/g,'<br>');
+  if (sources && sources.length) {
+    const row = document.createElement('div');
+    row.className = 'source-row';
+    sources.forEach(s => {
+      const c = document.createElement('span');
+      c.className = 'source-chip';
+      c.textContent = s;
+      row.appendChild(c);
+    });
+    div.appendChild(row);
+  }
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function showTyping() {
+  const area = document.getElementById('chatArea');
+  const div  = document.createElement('div');
+  div.className = 'typing'; div.id = 'typingIndicator';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typingIndicator');
+  if (t) t.remove();
+}
+
+function sendMessage() {
+  if (isTyping) return;
+  const input = document.getElementById('chatInput');
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value = '';
+
+  addMsg(text, 'user');
+  isTyping = true;
+  showTyping();
+
+  setTimeout(() => {
+    removeTyping();
+    const resp = ruleResponse(text);
+    addMsg(resp.text, 'bot', resp.sources);
+    isTyping = false;
+  }, 700 + Math.random() * 400);
+}
+
+function sendSuggestion(el) {
+  document.getElementById('chatInput').value = el.textContent;
+  sendMessage();
+}
+</script>
+</body>
+</html>
