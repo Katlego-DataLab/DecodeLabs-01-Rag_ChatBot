@@ -14,7 +14,9 @@ Built as part of the DecodeLab Batch 2026 Internship Programme by Katlego Matheb
 ---
 ## LIVE APP 
 [![Open in Streamlit](https://img.shields.io/badge/👑%20Open%20in-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://decodelabs-01-ragchatbot-mathebula03katlego.streamlit.app/)
-
+## 🌐 Interactive Demo
+👉 **[Try the live interactive demo](https://katlego-datalab.github.io/DecodeLabs-01-Rag_ChatBot/demo.html)**
+> Works in browser — no installation needed. Type a question and the RAG system responds instantly.
 ---
 ##  Demo
 
